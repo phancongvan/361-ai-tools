@@ -1,0 +1,40 @@
+@import "tailwindcss";
+
+@theme {
+  --color-surface: #f8f9fa;
+  --color-on-surface: #191c1d;
+  --color-on-surface-variant: #454652;
+  --color-primary: #2b3896;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #4551af;
+  --color-on-primary-container: #cbcfff;
+  --color-secondary-container: #dee0e1;
+  --color-on-secondary-container: #606364;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container: #edeeef;
+  --color-surface-container-high: #e7e8e9;
+  --color-surface-container-highest: #e1e3e4;
+  --color-surface-variant: #e1e3e4;
+  --color-outline: #757684;
+  --color-outline-variant: #c5c5d4;
+  --color-tertiary: #6c3400;
+  --color-tertiary-container: #8f4700;
+  --color-error: #ba1a1a;
+  --color-tertiary-fixed: #ffdcc6;
+  --color-on-tertiary-fixed: #301400;
+  --color-primary-fixed-dim: #bcc2ff;
+  --color-secondary: #5c5f60;
+  --color-surface-container-low: #f3f4f5;
+
+  --font-sans: 'Manrope', ui-sans-serif, system-ui, sans-serif;
+  --font-manrope: 'Manrope', ui-sans-serif, system-ui, sans-serif;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-surface);
+  color: var(--color-on-surface);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-y: scroll;
+}
