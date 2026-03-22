@@ -1,4 +1,4 @@
-import { getDb } from './db';
+import { getDb } from './db.js';
 
 export default async function seed() {
   const sql = getDb();
