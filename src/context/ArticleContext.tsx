@@ -199,23 +199,23 @@ const SAMPLE_BLOGS: Article[] = [
 export function ArticleProvider({ children }: { children: React.ReactNode }) {
   const [articles, setArticles] = useState<Article[]>([...SAMPLE_LISTICLES, ...SAMPLE_BLOGS]);
   const [tools, setTools] = useState<Tool[]>([...MOCK_TOOLS]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   // Fetch from API on mount, fallback to mock data
   useEffect(() => {
     let mounted = true;
 
     async function loadFromApi() {
-      setLoading(true);
 
-      // Fetch tools
-      const apiTools = await apiFetch<Tool[]>('/tools');
+      // Fetch tools and articles in parallel
+      const [apiTools, apiArticles] = await Promise.all([
+        apiFetch<Tool[]>('/tools'),
+        apiFetch<Article[]>('/articles'),
+      ]);
+
       if (mounted && apiTools && apiTools.length > 0) {
         setTools(apiTools);
       }
-
-      // Fetch articles
-      const apiArticles = await apiFetch<Article[]>('/articles');
       if (mounted && apiArticles && apiArticles.length > 0) {
         setArticles(apiArticles);
       }

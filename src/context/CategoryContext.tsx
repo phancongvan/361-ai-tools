@@ -68,13 +68,12 @@ const CategoryContext = createContext<CategoryContextType | undefined>(undefined
 
 export const CategoryProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [categories, setCategories] = useState<Category[]>(defaultCategories);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   // Fetch from API on mount
   useEffect(() => {
     let mounted = true;
     async function load() {
-      setLoading(true);
       const apiCats = await apiFetch<Category[]>('/categories');
       if (mounted && apiCats && apiCats.length > 0) {
         setCategories(apiCats);

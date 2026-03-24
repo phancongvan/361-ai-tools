@@ -9,9 +9,9 @@ import { CategoryProvider } from './context/CategoryContext';
 import { NotificationProvider } from './context/NotificationContext';
 import { ArticleProvider } from './context/ArticleContext';
 import { SubscriberProvider } from './context/SubscriberContext';
+import Home from './pages/Home';
 
-// Lazy load all page components for better initial load
-const Home = lazy(() => import('./pages/Home'));
+// Lazy load secondary pages
 const Directory = lazy(() => import('./pages/Directory'));
 const ToolDetail = lazy(() => import('./pages/ToolDetail'));
 const Blog = lazy(() => import('./pages/Blog'));
