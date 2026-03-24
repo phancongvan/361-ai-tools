@@ -227,7 +227,10 @@ export function ArticleProvider({ children }: { children: React.ReactNode }) {
     return () => { mounted = false; };
   }, []);
 
-  const listicles = articles.filter(a => a.type === 'listicle' && a.status === 'published');
+  const listicles = React.useMemo(
+    () => articles.filter(a => a.type === 'listicle' && a.status === 'published'),
+    [articles]
+  );
 
   const addArticle = useCallback(async (article: Article) => {
     setArticles(prev => [...prev, article]);
@@ -235,12 +238,21 @@ export function ArticleProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const updateArticle = useCallback(async (id: string, updates: Partial<Article>) => {
-    setArticles(prev => prev.map(a => a.id === id ? { ...a, ...updates } : a));
-    const current = articles.find(a => a.id === id);
-    if (current) {
-      await apiFetch('/articles', { method: 'PUT', body: JSON.stringify({ ...current, ...updates }) });
+    let articleToUpdate: Article | undefined;
+    setArticles(prev => {
+      const updated = prev.map(a => {
+        if (a.id === id) {
+          articleToUpdate = { ...a, ...updates };
+          return articleToUpdate;
+        }
+        return a;
+      });
+      return updated;
+    });
+    if (articleToUpdate) {
+      await apiFetch('/articles', { method: 'PUT', body: JSON.stringify(articleToUpdate) });
     }
-  }, [articles]);
+  }, []);
 
   const deleteArticle = useCallback(async (id: string) => {
     setArticles(prev => prev.filter(a => a.id !== id));
@@ -252,18 +264,19 @@ export function ArticleProvider({ children }: { children: React.ReactNode }) {
   }, [articles]);
 
   const toggleFeatured = useCallback(async (id: string, type: 'blog' | 'listicle') => {
+    let featuredArticle: Article | undefined;
     setArticles(prev => prev.map(article => {
       if (article.type === type) {
-        return { ...article, featured: article.id === id };
+        const updated = { ...article, featured: article.id === id };
+        if (article.id === id) featuredArticle = updated;
+        return updated;
       }
       return article;
     }));
-    // Update via API
-    const article = articles.find(a => a.id === id);
-    if (article) {
-      await apiFetch('/articles', { method: 'PUT', body: JSON.stringify({ ...article, featured: true }) });
+    if (featuredArticle) {
+      await apiFetch('/articles', { method: 'PUT', body: JSON.stringify(featuredArticle) });
     }
-  }, [articles]);
+  }, []);
 
   const togglePopularTool = useCallback((toolId: string): boolean => {
     let success = true;
@@ -305,12 +318,21 @@ export function ArticleProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const updateTool = useCallback(async (id: string, updates: Partial<Tool>) => {
-    setTools(prev => prev.map(t => t.id === id ? { ...t, ...updates } : t));
-    const current = tools.find(t => t.id === id);
-    if (current) {
-      await apiFetch('/tools', { method: 'PUT', body: JSON.stringify({ ...current, ...updates }) });
+    let toolToUpdate: Tool | undefined;
+    setTools(prev => {
+      const updated = prev.map(t => {
+        if (t.id === id) {
+          toolToUpdate = { ...t, ...updates };
+          return toolToUpdate;
+        }
+        return t;
+      });
+      return updated;
+    });
+    if (toolToUpdate) {
+      await apiFetch('/tools', { method: 'PUT', body: JSON.stringify(toolToUpdate) });
     }
-  }, [tools]);
+  }, []);
 
   const deleteTool = useCallback(async (id: string) => {
     setTools(prev => prev.filter(t => t.id !== id));

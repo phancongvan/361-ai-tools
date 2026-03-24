@@ -17,16 +17,18 @@ export default function AdminContentManagement() {
     });
   }, [articles, statusFilter, typeFilter]);
 
-  const handleDelete = (id: string, title: string) => {
-    showConfirm(
-      'Xóa Bài Viết',
-      `Bạn có chắc chắn muốn xóa bài viết "${title}" không? Hành động này không thể hoàn tác.`,
-      'danger',
-      () => {
-        deleteArticle(id);
-        showToast('Đã xóa bài viết thành công!', 'success');
-      }
-    );
+  const handleDelete = async (id: string, title: string) => {
+    const confirmed = await showConfirm({
+      title: 'Delete Article',
+      message: `Are you sure you want to delete "${title}"? This action cannot be undone.`,
+      confirmText: 'Delete',
+      cancelText: 'Cancel',
+      variant: 'danger',
+    });
+    if (confirmed) {
+      deleteArticle(id);
+      showToast('Article deleted successfully!', 'success');
+    }
   };
   return (
     <div className="bg-surface text-on-surface antialiased min-h-screen">

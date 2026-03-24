@@ -110,31 +110,22 @@ export const CategoryProvider: React.FC<{ children: ReactNode }> = ({ children }
   }, []);
 
   const updateCategory = useCallback(async (id: string, updatedFields: Partial<Category>) => {
+    let updatedCat: Category | null = null;
     const updateRecursive = (cats: Category[]): Category[] => {
       return cats.map(cat => {
-        if (cat.id === id) return { ...cat, ...updatedFields };
+        if (cat.id === id) {
+          updatedCat = { ...cat, ...updatedFields };
+          return updatedCat;
+        }
         if (cat.children) return { ...cat, children: updateRecursive(cat.children) };
         return cat;
       });
     };
     setCategories(prev => updateRecursive(prev));
-
-    // Find the full category to send
-    const findCat = (cats: Category[]): Category | null => {
-      for (const cat of cats) {
-        if (cat.id === id) return { ...cat, ...updatedFields };
-        if (cat.children) {
-          const found = findCat(cat.children);
-          if (found) return found;
-        }
-      }
-      return null;
-    };
-    const cat = findCat(categories);
-    if (cat) {
-      await apiFetch('/categories', { method: 'PUT', body: JSON.stringify(cat) });
+    if (updatedCat) {
+      await apiFetch('/categories', { method: 'PUT', body: JSON.stringify(updatedCat) });
     }
-  }, [categories]);
+  }, []);
 
   const deleteCategory = useCallback(async (id: string) => {
     const deleteRecursive = (cats: Category[]): Category[] => {

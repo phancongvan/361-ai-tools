@@ -50,7 +50,7 @@ export default function Footer() {
         </div>
         
         <div className="mt-16 pt-8 border-t border-surface-container flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-xs tracking-wide uppercase text-outline">© 2024 AI Curator Directory. All rights reserved.</p>
+          <p className="text-xs tracking-wide uppercase text-outline">© {new Date().getFullYear()} AI Curator Directory. All rights reserved.</p>
           <div className="flex gap-6 items-center">
             <Globe className="w-4 h-4 text-outline cursor-pointer hover:text-primary transition-colors" />
             <span className="text-xs font-bold text-outline">EN - USD</span>
