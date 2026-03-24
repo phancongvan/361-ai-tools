@@ -60,17 +60,20 @@ export default function Blog() {
     });
   }, [BLOG_CATEGORIES, expandedCategories]);
 
+  // Sync URL params -> state (only on URL change from external navigation)
+  const isInternalUpdate = React.useRef(false);
+
   React.useEffect(() => {
-    const q = searchParams.get('q');
-    if (q !== null && q !== searchQuery) {
-      setSearchQuery(q);
+    if (isInternalUpdate.current) {
+      isInternalUpdate.current = false;
+      return;
     }
+    const q = searchParams.get('q');
     const cat = searchParams.get('category');
-    if (cat !== null) {
-      if (cat !== selectedCategory) {
-        setSelectedCategory(cat);
-      }
-      
+
+    if (q !== null && q !== searchQuery) setSearchQuery(q);
+    if (cat !== null && cat !== selectedCategory) {
+      setSelectedCategory(cat);
       // Auto-expand parents
       const parentIdsToExpand: Record<string, boolean> = {};
       let currentCat = BLOG_CATEGORIES.find(c => c.id === cat);
@@ -81,16 +84,18 @@ export default function Blog() {
       if (Object.keys(parentIdsToExpand).length > 0) {
         setExpandedCategories(prev => ({ ...prev, ...parentIdsToExpand }));
       }
-    } else if (selectedCategory !== 'All Topics') {
+    } else if (cat === null && selectedCategory !== 'All Topics') {
       setSelectedCategory('All Topics');
     }
-  }, [searchParams, BLOG_CATEGORIES]);
+  }, [searchParams]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Sync state -> URL params
   React.useEffect(() => {
     const params = new URLSearchParams();
     if (searchQuery) params.set('q', searchQuery);
     if (selectedCategory !== 'All Topics') params.set('category', selectedCategory);
-    setSearchParams(params);
+    isInternalUpdate.current = true;
+    setSearchParams(params, { replace: true });
   }, [searchQuery, selectedCategory, setSearchParams]);
 
   const filteredPosts = useMemo(() => {

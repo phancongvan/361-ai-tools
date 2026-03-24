@@ -70,24 +70,20 @@ export default function Directory() {
   const [selectedSpecs, setSelectedSpecs] = useState<string[]>([]);
   const [minRating, setMinRating] = useState<number>(0);
 
-  useEffect(() => {
-    const params = new URLSearchParams();
-    if (searchQuery) params.set('q', searchQuery);
-    if (selectedCategory !== 'all') params.set('category', selectedCategory);
-    setSearchParams(params);
-  }, [searchQuery, selectedCategory, setSearchParams]);
+  // Sync URL params -> state (only on URL change from external navigation)
+  const isInternalUpdate = React.useRef(false);
 
   useEffect(() => {
-    const q = searchParams.get('q');
-    if (q !== null && q !== searchQuery) {
-      setSearchQuery(q);
+    if (isInternalUpdate.current) {
+      isInternalUpdate.current = false;
+      return;
     }
+    const q = searchParams.get('q');
     const cat = searchParams.get('category');
-    if (cat !== null) {
-      if (cat !== selectedCategory) {
-        setSelectedCategory(cat);
-      }
-      
+
+    if (q !== null && q !== searchQuery) setSearchQuery(q);
+    if (cat !== null && cat !== selectedCategory) {
+      setSelectedCategory(cat);
       // Auto-expand parents
       const parentIdsToExpand: Record<string, boolean> = {};
       let currentCat = CATEGORIES.find(c => c.id === cat);
@@ -98,10 +94,19 @@ export default function Directory() {
       if (Object.keys(parentIdsToExpand).length > 0) {
         setExpandedCategories(prev => ({ ...prev, ...parentIdsToExpand }));
       }
-    } else if (selectedCategory !== 'all') {
+    } else if (cat === null && selectedCategory !== 'all') {
       setSelectedCategory('all');
     }
-  }, [searchParams, CATEGORIES]);
+  }, [searchParams]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Sync state -> URL params
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (searchQuery) params.set('q', searchQuery);
+    if (selectedCategory !== 'all') params.set('category', selectedCategory);
+    isInternalUpdate.current = true;
+    setSearchParams(params, { replace: true });
+  }, [searchQuery, selectedCategory, setSearchParams]);
 
   const togglePricing = (pricing: string) => {
     setSelectedPricing(prev => 

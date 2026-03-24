@@ -27,7 +27,13 @@ export default function AdminToolManagement() {
   };
 
   const handleDeleteTool = async (tool: any) => {
-    const confirmed = await showConfirm(`Are you sure you want to delete ${tool.name}? This action cannot be undone.`);
+    const confirmed = await showConfirm({
+      title: 'Delete Tool',
+      message: `Are you sure you want to delete ${tool.name}? This action cannot be undone.`,
+      confirmText: 'Delete',
+      cancelText: 'Cancel',
+      variant: 'danger',
+    });
     if (confirmed) {
       deleteTool(tool.id);
       showToast(`${tool.name} removed successfully`, 'success');
@@ -182,7 +188,7 @@ export default function AdminToolManagement() {
                         </div>
                         <div>
                           <div className="font-bold text-on-surface">{tool.name}</div>
-                          <div className="text-[11px] text-on-surface-variant">Added: {tool.date}</div>
+                          <div className="text-[11px] text-on-surface-variant">{tool.category}</div>
                         </div>
                       </div>
                     </td>
@@ -264,14 +270,14 @@ export default function AdminToolManagement() {
             <div className="bg-surface-container-lowest p-6 rounded-2xl shadow-sm flex items-center justify-between">
               <div>
                 <div className="text-[10px] uppercase tracking-widest text-on-surface-variant font-bold mb-1">Pending / Drafts</div>
-                <div className="text-xl font-bold text-on-surface">{allTools.filter(t => t.status !== 'published').length} Tools</div>
+                <div className="text-xl font-bold text-on-surface">0 Tools</div>
               </div>
               <span className="material-symbols-outlined text-3xl text-primary/40">pending_actions</span>
             </div>
             <div className="bg-surface-container-lowest p-6 rounded-2xl shadow-sm flex items-center justify-between">
               <div>
                 <div className="text-[10px] uppercase tracking-widest text-on-surface-variant font-bold mb-1">Published Tools</div>
-                <div className="text-xl font-bold text-on-surface">{allTools.filter(t => t.status === 'published').length}</div>
+                <div className="text-xl font-bold text-on-surface">{allTools.length}</div>
               </div>
               <span className="material-symbols-outlined text-3xl text-primary/40">trending_up</span>
             </div>

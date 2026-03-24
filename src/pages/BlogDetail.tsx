@@ -34,7 +34,24 @@ export default function BlogDetail() {
     );
   }
 
-  const content = (article as any).content || `<p class="text-xl font-medium text-on-surface mb-8">${(article as any).excerpt || 'Nội dung chi tiết đang được cập nhật...'}</p><p>Vui lòng quay lại sau để đọc bản đầy đủ của bài viết này.</p>`;
+  // Basic HTML sanitization to prevent XSS
+  const sanitizeHtml = (html: string): string => {
+    const div = document.createElement('div');
+    div.innerHTML = html;
+    // Remove script tags and event handlers
+    div.querySelectorAll('script, iframe, object, embed').forEach(el => el.remove());
+    div.querySelectorAll('*').forEach(el => {
+      Array.from(el.attributes).forEach(attr => {
+        if (attr.name.startsWith('on') || attr.value.startsWith('javascript:')) {
+          el.removeAttribute(attr.name);
+        }
+      });
+    });
+    return div.innerHTML;
+  };
+
+  const rawContent = (article as any).content || `<p class="text-xl font-medium text-on-surface mb-8">${(article as any).excerpt || 'Content is being updated...'}</p><p>Please check back later for the full article.</p>`;
+  const content = sanitizeHtml(rawContent);
 
   return (
     <div className="bg-surface text-on-surface antialiased font-manrope min-h-screen flex flex-col">
